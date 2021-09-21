@@ -254,6 +254,27 @@ type PaymentMethodFinancialInstitutions struct {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// WebhookResponse é a struct que é usada para receber os dados do request que o MercadoPago faz para o nosso webhook.
+type WebhookResponse struct {
+	ID            int              `json:"id"`
+	LiveMode      bool             `json:"live_mode"`
+	Type          string           `json:"type"`
+	DateCreated   string           `json:"date_created"`
+	ApplicationID int              `json:"application_id"`
+	UserID        int              `json:"user_id"`
+	Version       int              `json:"version"`
+	APIVersion    string           `json:"api_version"`
+	Action        string           `json:"action"`
+	Data          WebhookPaymentID `json:"data"`
+}
+
+// WebhookPaymentID é a struct que contém o ID do pagamento que foi feito pelo pagador final, esse ID deve ser usado para consultar as informações do pagamento.
+type WebhookPaymentID struct {
+	ID string `json:"id"`
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // ErrorResponse é a struct que é usada para receber os retornos de erro do MercadoPAgo.
 type ErrorResponse struct {
 	Error   string `json:"error"`   // Slug do erro que retornou
