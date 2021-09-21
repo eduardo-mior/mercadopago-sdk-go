@@ -12,7 +12,8 @@ $ go get -u github.com/eduardo-mior/mercadopago-sdk-go
 Funcionalidades disponíbilizadas no SDK:
 - Criação de um pagamento
 - Atualização de um pagamento
-- Consulta de um pagamento
+- Buscar informações de um pagamento
+- Consultar situação de um pagamento
 - Listagem/Busca de pagamento
 - Listagem de tipos de documento de identificação do MercadoPago
 - Listagem de métodos de pagamento e suas confiurações
@@ -45,6 +46,7 @@ response, mercadopagoErr, err := mercadopago.CreatePayment(mercadopago.PaymentRe
         Surname: "Mior",
         Email:   "eduardo-mior@hotmail.com",
     },
+    NotificationURL:   "https://localhost/webhook/mercadopago",
 })
 
 if err != nil {
@@ -87,7 +89,7 @@ if err != nil {
 }
 ```
 
-Consultando o status de um pagamento:
+Buscando as informações de um pagamento:
 ```go
 response, mercadopagoErr, err := mercadopago.GetPayment("825927174-5423394f-06f1-4d2b-8545-35ebecf70008")
 
@@ -156,6 +158,10 @@ De acordo como forem surgindo as necessídades mais funções serão implementad
 O SDK precisa obrigatóriamente para funcionar, de uma variavel de ambiente chamada `MERCADO_PAGO_ACCESS_TOKEN` que contém o seu Token de integração do MercadoPago. Esse Token pode ser obtido na [página "Suas Integrações" na Dashboard do painel de Desenvolvedores do MercadoPago](https://www.mercadopago.com.br/developers/panel). Para setar a variavel ambiente você pode usar a função `os.Setenv("MERCADO_PAGO_ACCESS_TOKEN", "seu-token...")` ou você pode usar um arquivo `.env` e usar um pacote para gerenciar as variaveis de ambiente, como por exemplo o [Gotenv](https://github.com/subosito/gotenv).
 ###
 Todas as funções do SDK podém retornar um `error` genérico do GO e um `ErrorResponse` do MercadoPago. O `error` sempre relacionado a erros do GO, como por exemplo falha ao tentar dar parse em um JSON, já o `ErrorResponse` que é a Struct de erro retornada do MercadoPago, sempre esta relacionada a erros que foram retornados da API, como por exemplo quando você não envia um campo obrigatório por exemplo.
+###
+Após criar um pagamento, o link para efetuar o pagamento esta na posição `InitPoint`, do model `PaymentResponse`.
+###
+Atenção! Você deve implementar manualmente o Webhook que recebe as atualizações de Status do pagamento usando o seu Framework WEB de prefencia (lembrando que o SDK possui a Struct `WebhookResponse` que pode ajudar no recebimento dos dados).
 
 ## 📚 Documentação oficial
 Para mais duvidas consulte a [documentação oficial do MercadoPago](https://www.mercadopago.com.br/developers/pt/reference).
