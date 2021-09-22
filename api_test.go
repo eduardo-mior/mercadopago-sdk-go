@@ -188,7 +188,7 @@ func TestSuccessOnGetPayment(t *testing.T) {
 }
 
 // Testando erro na consulta de um pagamento (pagamento inexistente)
-func TestErrorOnConsultStatusPayment(t *testing.T) {
+func TestErrorOnGetPayment(t *testing.T) {
 
 	response, mercadopagoErr, err := GetPayment("test-inexistente")
 
@@ -268,6 +268,27 @@ func TestSuccessOnGetPaymentMethods(t *testing.T) {
 
 	} else {
 		t.Log(paymentMethods) // Sucesso!
+	}
+
+}
+
+// Testando consulta de situação de um pagamento
+func TestErrorOnConsultStatusPayment(t *testing.T) {
+
+	response, mercadopagoErr, err := ConsultPayment("1241420907")
+
+	if err != nil {
+		t.Error("Erro inesperado!")
+		t.Error(err.Error())
+
+	} else if mercadopagoErr != nil {
+		t.Error("Erro não tratado MercadoPago!")
+		t.Error(mercadopagoErr.Message)
+		t.Error(mercadopagoErr.Status)
+		t.Error(mercadopagoErr.Error)
+
+	} else {
+		t.Log(response)
 	}
 
 }
