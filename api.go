@@ -113,6 +113,31 @@ func SearchPayments(searchParams PaymentSearchParams) (*PaymentSearchResponse, *
 	return &paymentSearchResponse, nil, err
 }
 
+// ConsultPayment é o método responsável consultar as informações atualizadas de um pagamento no MercadoPago, incluindo Status.
+func ConsultPayment(paymentID string) (*PaymentConsultResponse, *ErrorResponse, error) {
+
+	params := request.Params{
+		Method:     "GET",
+		PathParams: request.PathParams{paymentID},
+		Headers:    map[string]interface{}{"Authorization": "Bearer " + os.Getenv("MERCADO_PAGO_ACCESS_TOKEN")},
+		URL:        BASEURL + "/v1/payments",
+	}
+
+	response, err := request.New(params)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if response.StatusCode > 300 {
+		resp, err := parseError(response.RawBody)
+		return nil, resp, err
+	}
+
+	var paymentResponse PaymentConsultResponse
+	err = json.Unmarshal(response.RawBody, &paymentResponse)
+	return &paymentResponse, nil, err
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // GetIdentificationTypes é o método responsável retornar todos o tipos de documento de identificação do MercadoPago.

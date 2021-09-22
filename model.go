@@ -8,7 +8,7 @@ import (
 
 // PaymentResponse é a struct que é usada para receber os dados do request de novo pagamento do MercadoPago.
 type PaymentResponse struct {
-	CollectorID   int      `json:"collector_id"`   // ID do collector (fornecedor) ??
+	CollectorID   int      `json:"collector_id"`   // Nosso ID do MercadoPago
 	OperationType string   `json:"operation_type"` // Tipo da operação (regular_payment, money_transfer)
 	Items         []Item   `json:"items"`          // Itens vendidos
 	Payer         Payer    `json:"payer"`          // Informações do pagador da cobrança
@@ -121,7 +121,7 @@ type Item struct {
 	ID          string  `json:"id"`                    // Identificador interno nosso de controle
 	Title       string  `json:"title"`                 // Titulo do item que é exibido na hora do pagamento
 	Description string  `json:"description"`           // Descrição do item (não é exibido na hora do pagamento)
-	PictureURL  string  `json:"picture_url,omitempty"` // Imagem do item (não é exibido na hora do pagamento)
+	PictureURL  string  `json:"picture_url,omitempty"` // Imagem do item (imagem que fica nas OG MetaTags do HTML)
 	CategoryID  string  `json:"category_id"`           // Identificador da categoria interno nosso de controle
 	Quantity    float64 `json:"quantity"`              // Quantidade do item vendido (obrigatório)
 	CurrencyID  string  `json:"currency_id"`           // Identificador universal da moeda que será usada no pagamento no formato ISO-4217
@@ -260,7 +260,7 @@ type WebhookResponse struct {
 	LiveMode    bool             `json:"live_mode"`    // ???
 	Type        string           `json:"type"`         // Tipo do evento, exemplo: payment
 	DateCreated string           `json:"date_created"` // Data de criação do Webhook
-	UserID      int              `json:"user_id"`      // ID do usuário no MercadoPago
+	UserID      int              `json:"user_id"`      // Nosso ID do MercadoPago
 	APIVersion  string           `json:"api_version"`  // Versão da API, exemplo: v1
 	Action      string           `json:"action"`       // Ação do evento, exemplo: payment.created
 	Data        WebhookPaymentID `json:"data"`         // Struct com o ID do pagamento
@@ -269,12 +269,92 @@ type WebhookResponse struct {
 // WebhookPaymentID é a struct que contém o ID do pagamento que foi feito pelo pagador final, esse ID deve ser usado para consultar as informações do pagamento.
 type WebhookPaymentID struct {
 	ID string `json:"id"` // ID do pagamento que é usado para consultar o status
-	ID string `json:"id"`
+}
+
+// PaymentConsultResponse é a struct que contém as informações do retorno da Consulta de um pagamento.
+type PaymentConsultResponse struct {
+	AdditionalInfo            PaymentConsultAdditionalInfo `json:"additional_info"`                // Informações adicionais do pagamento
+	AuthorizationCode         *string                      `json:"authorization_code"`             // Código de autorização do pagamento
+	BinaryMode                bool                         `json:"binary_mode"`                    // Indica se é o modo binaria de pagamento ou não
+	Captured                  bool                         `json:"captured"`                       // Indica se o pagamento foi capturado ou não ???
+	Card                      PaymentConsultCard           `json:"card"`                           // Informações do cartão de crédito do pagamento
+	CollectorID               int                          `json:"collector_id"`                   // Nosso ID do MercadoPago
+	CurrencyID                string                       `json:"currency_id"`                    // Identificador universal da moeda que será usada no pagamento no formato ISO-4217
+	DateApproved              *time.Time                   `json:"date_approved"`                  // Data da aprovação do pagamento
+	DateCreated               time.Time                    `json:"date_created"`                   // Data da criação do pagamento
+	DateLastUpdated           *time.Time                   `json:"date_last_updated"`              // Data da ultima atualização do pagamento
+	DateOfExpiration          *time.Time                   `json:"date_of_expiration"`             // Data de expiração de meios de pagamento em dinheiro
+	Description               string                       `json:"description"`                    // Descrição do pagamento
+	DifferentialPricingId     string                       `json:"differential_pricing_id"`        // Identificador único da configuração de preço diferenciado
+	ExternalReference         string                       `json:"external_reference"`             // Nosso ID de controle interno
+	FeeDetails                []FeeDetails                 `json:"fee_details"`                    // Informações sobre as taxas que foram aplicadas sobre o pagamento
+	ID                        int                          `json:"id"`                             // Identificador único do pagamento
+	Installments              int                          `json:"installments"`                   // Número máximo de parcelas
+	LiveMode                  bool                         `json:"live_mode"`                      // ???
+	MoneyReleaseDate          time.Time                    `json:"money_release_date"`             // Data da liberação do dinheiro
+	MoneyReleaseSchema        *string                      `json:"money_release_schema"`           // Esquema da liberação do dinheiro
+	NotificationURL           string                       `json:"notification_url"`               // URL do Webhook que é chamada quando o Status do pagamento é atualizado
+	OperationType             string                       `json:"operation_type"`                 // Tipo do pagamento (consulte a documentação para saber oque significa)
+	Payer                     Payer                        `json:"payer"`                          // Informações do pagador
+	PaymentMethodID           string                       `json:"payment_method_id"`              // ID do método de pagamento (exemplo: master)
+	PaymentTypeID             string                       `json:"payment_type_id"`                // Tipo do método de pagamento (exemplo: credit_card)
+	ProcessingModes           string                       `json:"processing_modes"`               // Modo de processamento
+	StatementDescriptor       string                       `json:"statement_descriptor,omitempty"` // Descrição do pagamento que ira aparecer no extrato do cartão
+	Status                    string                       `json:"status"`                         // Status do pagamento (pending, approved, authorized, in_process, in_mediation, rejected, cancelled, refunded, charged_back)
+	StatusDetail              string                       `json:"status_detail"`                  // Detalhes sobre o status do pagamento
+	TransactionAmount         float64                      `json:"transaction_amount"`             // Valor pago
+	TransactionAmountRefunded float64                      `json:"transaction_amount_refunded"`    // Valor do reembolso
+	TransactionDetails        TransactionDetails           `json:"transaction_details"`            // Detalhes da transação
+}
+
+// PaymentConsultCard é a struct que contém as informações do cartão de crédito que efetuou o pagamento
+type PaymentConsultCard struct {
+	Cardholder      Cardholder `json:"cardholder"`        // Informações do dono do cartão
+	DateCreated     *time.Time `json:"date_created"`      // Data de criação do cartão
+	DateLastUpdated *time.Time `json:"date_last_updated"` // Data da ultima atualização do cartão
+	ExpirationMonth int        `json:"expiration_month"`  // Mês de expiração do cartão
+	ExpirationYear  int        `json:"expiration_year"`   // Ano de expiração do cartão
+	FirstSixDigits  string     `json:"first_six_digits"`  // Seis primeiros digitos do cartão
+	LastFourDigits  string     `json:"last_four_digits"`  // Ultimos quatro digitos do cartão
+}
+
+// Cardholder é a struct que contém as informações do dono do cartão
+type Cardholder struct {
+	Identification PayerIdentification `json:"identification"` // Informações de identificação do cartão de crédito
+	Name           string              `json:"name"`           // Nome do dono do cartão de crédito
+}
+
+// PaymentConsultAdditionalInfo é a struct que contém informações adicionais sobre o pagamento
+type PaymentConsultAdditionalInfo struct {
+	IPAddress string `json:"ip_address"` // IP do usuário que pagou
+
+	// Items     []Item `json:"items"`
+	// Por algum motivo eles retoram a Quantity do item e o UnityPrice como String e isso faz com que aconteça erro no Unmarshal do JSON.
+	// Por esse motivo foi comentado o campo Items das informações adicionais.
+}
+
+// FeeDetails é a struct que contém as informações sobre a taxa que foi cobrada sobre o pagamento
+type FeeDetails struct {
+	Amount   float64 `json:"amount"`    // Porcentagem da taxa que foi paga
+	FeePayer string  `json:"fee_payer"` // Indica que ira pagar a taxa
+	Type     string  `json:"type"`      // Indica quem esta cobrando a taxa
+}
+
+// TransactionDetails é a struct que contém as informações sobre os detalhes da transação
+type TransactionDetails struct {
+	ExternalResourceURL      *string `json:"external_resource_url"`       // URL externa do recurso
+	FinancialInstitution     *string `json:"financial_institution"`       // Instituição financeira responsavel pelo pagamento
+	TotalPaidAmount          float64 `json:"total_paid_amount"`           // Valor total pago
+	InstallmentAmount        float64 `json:"installment_amount"`          // Valor do pagamento / Valor da parcela
+	NetReceivedAmount        float64 `json:"net_received_amount"`         // Valor liquido recebido com o valor descontado das taxas
+	OverpaidAmount           float64 `json:"overpaid_amount"`             // Valor pago em excesso ???
+	PayableDeferralPeriod    string  `json:"payable_deferral_period"`     // ????
+	PaymentMethodReferenceID string  `json:"payment_method_reference_id"` // ID de referencia do método de pagamento
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// ErrorResponse é a struct que é usada para receber os retornos de erro do MercadoPAgo.
+// ErrorResponse é a struct que é usada para receber os retornos de erro do MercadoPago.
 type ErrorResponse struct {
 	Error   string `json:"error"`   // Slug do erro que retornou
 	Message string `json:"message"` // Mensagem de erro relacinada ao campo
