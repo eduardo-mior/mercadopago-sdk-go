@@ -291,7 +291,7 @@ type PaymentConsultResponse struct {
 	ID                        int                          `json:"id"`                             // Identificador único do pagamento
 	Installments              int                          `json:"installments"`                   // Número máximo de parcelas
 	LiveMode                  bool                         `json:"live_mode"`                      // ???
-	MoneyReleaseDate          time.Time                    `json:"money_release_date"`             // Data da liberação do dinheiro
+	MoneyReleaseDate          *time.Time                   `json:"money_release_date"`             // Data da liberação do dinheiro na nossa conta do MercadoPago
 	MoneyReleaseSchema        *string                      `json:"money_release_schema"`           // Esquema da liberação do dinheiro
 	NotificationURL           string                       `json:"notification_url"`               // URL do Webhook que é chamada quando o Status do pagamento é atualizado
 	OperationType             string                       `json:"operation_type"`                 // Tipo do pagamento (consulte a documentação para saber oque significa)
@@ -300,11 +300,40 @@ type PaymentConsultResponse struct {
 	PaymentTypeID             string                       `json:"payment_type_id"`                // Tipo do método de pagamento (exemplo: credit_card)
 	ProcessingModes           string                       `json:"processing_modes"`               // Modo de processamento
 	StatementDescriptor       string                       `json:"statement_descriptor,omitempty"` // Descrição do pagamento que ira aparecer no extrato do cartão
-	Status                    string                       `json:"status"`                         // Status do pagamento (pending, approved, authorized, in_process, in_mediation, rejected, cancelled, refunded, charged_back)
-	StatusDetail              string                       `json:"status_detail"`                  // Detalhes sobre o status do pagamento
 	TransactionAmount         float64                      `json:"transaction_amount"`             // Valor pago
 	TransactionAmountRefunded float64                      `json:"transaction_amount_refunded"`    // Valor do reembolso
 	TransactionDetails        TransactionDetails           `json:"transaction_details"`            // Detalhes da transação
+
+	// Código de barras do boleto
+	// Nos testes que eu (Eduardo Mior) fiz, essa Struct só é retornada quando o pagamento é feito em boleto ou PEC(lotéricas), porém isso não esta documentado em nenhum lugar na documentação do MercadoPago
+	Barcode *Barcode `json:"barcode"`
+
+	// QRCode do Pix e Chave Copia-e-Cola do Pix
+	// Nos testes que eu (Eduardo Mior) fiz, essa Struct só é retornada quando o pagamento é feito em pix, porém isso não esta documentado em nenhum lugar na documetação do MercadoPago
+	PointOfInteraction *PointOfInteraction `json:"point_of_interaction"`
+
+	// Status do pagamento (segundo documentação oficial do mercado pago)
+	// approved - Pagamento aprovado
+	// pending - Pagamento pendente
+	// authorized - Pagamento autorizado porém ainda não aprovado
+	// in_process - O pagamento esta sendo revisado pelo MercadoPago
+	// in_mediation - Foi aberta uma disputa no pagamento e ele esta em revisão
+	// rejected - Pagamento rejeitado (cartão de crédito)
+	// cancelled - O pagamento foi cancelado por uma das partes ou porque ele expirou
+	// refunded - O pagamento foi reembolsado para o usuário
+	// charged_back - Foi feito um estorno do pagamento no cartão de crédito do usuário
+	Status string `json:"status"`
+
+	// Detalhes sobre o status do pagamento (a lista abaixo não esta na documentação oficial, ela foi mapeada durante os testes feitos)
+	// cc_rejected_card_disabled (cartão de crédito bloqueado)
+	// cc_rejected_blacklist (cartão de crédito recusado)
+	// cc_rejected_high_risk (cartão de crédito recusado)
+	// rejected_high_risk (paypal recusado)
+	// pending_review_manual (pagamendo sendo revisado pelo mercadopago)
+	// pending_waiting_transfer (aguardando pagamento do pix / aguardando transferência do dinheiro)
+	// pending_waiting_payment (aguardando pagamento do boleto ou do PEC(lotérica))
+	// accredited (aprovado)
+	StatusDetail string `json:"status_detail"`
 }
 
 // PaymentConsultCard é a struct que contém as informações do cartão de crédito que efetuou o pagamento
@@ -342,7 +371,7 @@ type FeeDetails struct {
 
 // TransactionDetails é a struct que contém as informações sobre os detalhes da transação
 type TransactionDetails struct {
-	ExternalResourceURL      *string `json:"external_resource_url"`       // URL externa do recurso
+	ExternalResourceURL      *string `json:"external_resource_url"`       // URL do Boleto ou do PEC caso a forma de pagamento for boleto ou lotéricas
 	FinancialInstitution     *string `json:"financial_institution"`       // Instituição financeira responsavel pelo pagamento
 	TotalPaidAmount          float64 `json:"total_paid_amount"`           // Valor total pago
 	InstallmentAmount        float64 `json:"installment_amount"`          // Valor do pagamento / Valor da parcela
@@ -350,6 +379,23 @@ type TransactionDetails struct {
 	OverpaidAmount           float64 `json:"overpaid_amount"`             // Valor pago em excesso ???
 	PayableDeferralPeriod    string  `json:"payable_deferral_period"`     // ????
 	PaymentMethodReferenceID string  `json:"payment_method_reference_id"` // ID de referencia do método de pagamento
+	TransactionID            *string `json:"transaction_id"`              // ID da transação
+}
+
+// Barcode é a struct que contém o código de barras do boleto
+type Barcode struct {
+	Content string `json:"content"` // Código de barras do boleto
+}
+
+// PointOfInteraction é a struct que contém as informações dos dados da transação no caso do pagamento ser em Pix (pelos testes que eu fiz essa struct só é preenchida quando é pix)
+type PointOfInteraction struct {
+	TransactionData TransactionData `json:"transaction_data"` // Informações do QRCode
+}
+
+// TransactionData é a struct que contém as informações do Base64 do QRCode e a chave Pix Copia-e-Cola
+type TransactionData struct {
+	QrCode       string `json:"qr_code"`        // Chave Pix Copia-e-Cola
+	QrCodeBase64 string `json:"qr_code_base64"` // Base64 Do QRCode do Pix
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
