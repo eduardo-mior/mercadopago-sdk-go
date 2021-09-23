@@ -102,6 +102,19 @@ if err != nil {
 }
 ```
 
+Consultando a situação de um pagamento:
+```go
+response, mercadopagoErr, err := mercadopago.ConsultPayment(webhookResponse.Data.ID)
+
+if err != nil {
+    // Erro inesperado
+} else if mercadopagoErr != nil {
+    // Erro retornado do MercadoPago
+} else {
+    // Sucesso!
+}
+```
+
 Pesquisando um pagamento:
 ```go
 // Na pesquisa de pagamento pode ser aplicado filtro por qualquer campo/propriedade do pagamento.
