@@ -174,7 +174,7 @@ Todas as funções do SDK podém retornar um `error` genérico do GO e um `Error
 ###
 Após criar um pagamento, o link para efetuar o pagamento esta na posição `InitPoint`, do model `PaymentResponse`.
 ###
-Atenção! Você deve implementar manualmente o Webhook que recebe as atualizações de Status do pagamento usando o seu Framework WEB de prefencia (lembrando que o SDK possui a Struct `WebhookResponse` que pode ajudar no recebimento dos dados).
+Atenção! Você deve implementar manualmente o Webhook que recebe as atualizações de Status do pagamento usando o seu Framework WEB de prefencia (lembrando que o SDK possui a Struct `WebhookResponse` que pode ajudar no recebimento dos dados). Após receber uma notificação do Webhook do MercadoPago nós deveremos chamar a função `ConsultPayment()`  passando por parametro o `ID` foi enviado pelo MercadoPago na struct `WebhookPaymentID` para consultar a situação do pagamento e saber se ele esta pago ou não.
 
 ## 📚 Documentação oficial
 Para mais duvidas consulte a [documentação oficial do MercadoPago](https://www.mercadopago.com.br/developers/pt/reference).
