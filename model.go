@@ -324,7 +324,7 @@ type PaymentConsultResponse struct {
 	// charged_back - Foi feito um estorno do pagamento no cartão de crédito do usuário
 	Status string `json:"status"`
 
-	// Detalhes sobre o status do pagamento (a lista abaixo não esta na documentação oficial, ela foi mapeada durante os testes feitos)
+	// Detalhes sobre o status do pagamento. A lista completa pode ser consultada em https://www.mercadopago.com.br/developers/pt/guides/online-payments/checkout-api/handling-responses
 	// cc_rejected_card_disabled (cartão de crédito bloqueado)
 	// cc_rejected_blacklist (cartão de crédito recusado)
 	// cc_rejected_high_risk (cartão de crédito recusado)
@@ -333,6 +333,7 @@ type PaymentConsultResponse struct {
 	// pending_waiting_transfer (aguardando pagamento do pix / aguardando transferência do dinheiro)
 	// pending_waiting_payment (aguardando pagamento do boleto ou do PEC(lotérica))
 	// accredited (aprovado)
+	// https://prnt.sc/1ta9w4b
 	StatusDetail string `json:"status_detail"`
 }
 
