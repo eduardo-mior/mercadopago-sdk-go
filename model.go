@@ -260,7 +260,7 @@ type WebhookResponse struct {
 	LiveMode    bool             `json:"live_mode"`    // ???
 	Type        string           `json:"type"`         // Tipo do evento, exemplo: payment
 	DateCreated string           `json:"date_created"` // Data de criação do Webhook
-	UserID      int              `json:"user_id"`      // Nosso ID do MercadoPago
+	UserID      string           `json:"user_id"`      // Nosso ID do MercadoPago
 	APIVersion  string           `json:"api_version"`  // Versão da API, exemplo: v1
 	Action      string           `json:"action"`       // Ação do evento, exemplo: payment.created
 	Data        WebhookPaymentID `json:"data"`         // Struct com o ID do pagamento
