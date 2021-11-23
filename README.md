@@ -47,7 +47,7 @@ response, mercadopagoErr, err := mercadopago.CreatePayment(mercadopago.PaymentRe
         Email:   "eduardo-mior@hotmail.com",
     },
     NotificationURL:   "https://localhost/webhook/mercadopago",
-})
+}, "seu-access-token")
 
 if err != nil {
     // Erro inesperado
@@ -78,7 +78,7 @@ response, mercadopagoErr, err := mercadopago.UpdatePayment("825927174-5423394f-0
         Surname: "De Bastiani Mior",
         Email:   "eduardo-mior@hotmail.com",
     },
-})
+}, "seu-access-token")
 
 if err != nil {
     // Erro inesperado
@@ -91,7 +91,7 @@ if err != nil {
 
 Buscando as informações de um pagamento:
 ```go
-response, mercadopagoErr, err := mercadopago.GetPayment("825927174-5423394f-06f1-4d2b-8545-35ebecf70008")
+response, mercadopagoErr, err := mercadopago.GetPayment("825927174-5423394f-06f1-4d2b-8545-35ebecf70008", "seu-access-token")
 
 if err != nil {
     // Erro inesperado
@@ -104,7 +104,7 @@ if err != nil {
 
 Consultando a situação de um pagamento:
 ```go
-response, mercadopagoErr, err := mercadopago.ConsultPayment(webhookResponse.Data.ID)
+response, mercadopagoErr, err := mercadopago.ConsultPayment(webhookResponse.Data.ID, "seu-access-token")
 
 if err != nil {
     // Erro inesperado
@@ -119,7 +119,7 @@ Pesquisando um pagamento:
 ```go
 // Na pesquisa de pagamento pode ser aplicado filtro por qualquer campo/propriedade do pagamento.
 // No exemplo abaixo a pesquisa é feita pelo campo external_reference que é o nosso ID interno de conrole.
-response, mercadopagoErr, err := mercadopago.SearchPayments(mercadopago.PaymentSearchParams{"external_reference": "seu-id-interno-0001"})
+response, mercadopagoErr, err := mercadopago.SearchPayments(mercadopago.PaymentSearchParams{"external_reference": "seu-id-interno-0001"}, "seu-access-token")
 
 
 if err != nil {
@@ -133,7 +133,7 @@ if err != nil {
 
 Consultando a lista de tipos de documento e identificação:
 ```go
-identificationTypes, mercadopagoErr, err := mercadopago.GetIdentificationTypes()
+identificationTypes, mercadopagoErr, err := mercadopago.GetIdentificationTypes("seu-access-token")
 
 if err != nil {
     // Erro inesperado
@@ -146,7 +146,7 @@ if err != nil {
 
 Consultando a lista de meios e pagamento:
 ```go
-identificationTypes, mercadopagoErr, err := mercadopago.GetPaymentMethods()
+identificationTypes, mercadopagoErr, err := mercadopago.GetPaymentMethods("seu-access-token")
 
 if err != nil {
     // Erro inesperado
@@ -168,7 +168,7 @@ O SDK atualmente possui suporte as seguintes funções:
 
 De acordo como forem surgindo as necessídades mais funções serão implementadas no SDK. Sinta-se livre para fazer um PullRequest ou uma Issue para novas funcionalidades.
 ###
-O SDK precisa obrigatóriamente para funcionar, de uma variavel de ambiente chamada `MERCADO_PAGO_ACCESS_TOKEN` que contém o seu Token de integração do MercadoPago. Esse Token pode ser obtido na [página "Suas Integrações" na Dashboard do painel de Desenvolvedores do MercadoPago](https://www.mercadopago.com.br/developers/panel). Para setar a variavel ambiente você pode usar a função `os.Setenv("MERCADO_PAGO_ACCESS_TOKEN", "seu-token...")` ou você pode usar um arquivo `.env` e usar um pacote para gerenciar as variaveis de ambiente, como por exemplo o [Gotenv](https://github.com/subosito/gotenv).
+O SDK precisa obrigatóriamente para funcionar do AccessToken da conta do MercadoPago. O AccessToken pode ser passado por parametro em todas as funções, ou pode ser definido uma variavel de ambiente chamada `MERCADO_PAGO_ACCESS_TOKEN` que contém o seu Token de integração do MercadoPago. Esse Token pode ser obtido na [página "Suas Integrações" na Dashboard do painel de Desenvolvedores do MercadoPago](https://www.mercadopago.com.br/developers/panel). Para setar a variavel ambiente você pode usar a função `os.Setenv("MERCADO_PAGO_ACCESS_TOKEN", "seu-token...")` ou você pode usar um arquivo `.env` e usar um pacote para gerenciar as variaveis de ambiente, como por exemplo o [Gotenv](https://github.com/subosito/gotenv).
 ###
 Todas as funções do SDK podém retornar um `error` genérico do GO e um `ErrorResponse` do MercadoPago. O `error` sempre relacionado a erros do GO, como por exemplo falha ao tentar dar parse em um JSON, já o `ErrorResponse` que é a Struct de erro retornada do MercadoPago, sempre esta relacionada a erros que foram retornados da API, como por exemplo quando você não envia um campo obrigatório por exemplo.
 ###
