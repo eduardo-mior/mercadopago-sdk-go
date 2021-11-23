@@ -31,6 +31,45 @@ func TestSuccessOnCreatePayment(t *testing.T) {
 			Surname: "Montagna",
 			Email:   "raniellimontagna@hotmail.com",
 		},
+	}, "TEST-1234936262199689-021433-a3e53345eecx2de47d25336123c21fc1-144567999")
+
+	if err != nil {
+		t.Error("Erro inesperado!")
+		t.Error(err.Error())
+
+	} else if mercadopagoErr != nil {
+		t.Error("Erro não tratado MercadoPago!")
+		t.Error(mercadopagoErr.Message)
+		t.Error(mercadopagoErr.Status)
+		t.Error(mercadopagoErr.Error)
+
+	} else {
+		t.Log(response.InitPoint) // Sucesso!
+	}
+
+}
+
+// Testando geração de um pagamento
+func TestSuccessOnCreatePaymentWithTokenParam(t *testing.T) {
+
+	response, mercadopagoErr, err := CreatePayment(PaymentRequest{
+		ExternalReference: "test-00001",
+		Items: []Item{
+			{
+				Title:     "Pagamendo mensalidade PagueTry",
+				Quantity:  1,
+				UnitPrice: 50,
+			},
+		},
+		Payer: Payer{
+			Identification: PayerIdentification{
+				Type:   "CPF",
+				Number: "12345678909",
+			},
+			Name:    "Rannielli Cruz",
+			Surname: "Montagna",
+			Email:   "raniellimontagna@hotmail.com",
+		},
 	})
 
 	if err != nil {
