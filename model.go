@@ -309,7 +309,8 @@ type PaymentConsultResponse struct {
 	Barcode *Barcode `json:"barcode"`
 
 	// QRCode do Pix e Chave Copia-e-Cola do Pix
-	// Nos testes que eu (Eduardo Mior) fiz, essa Struct só é retornada quando o pagamento é feito em pix, porém isso não esta documentado em nenhum lugar na documetação do MercadoPago
+	// Nos testes que eu (Eduardo Mior) fiz, essa Struct contém a Chave Copia-e-Cola no caso e ser PIX e no caso e ser cartão de crédito ou outras formas de pagamento
+	// contém outras informações inuteis, porém isso não esta documentado em nenhum lugar na documetação do MercadoPago
 	PointOfInteraction *PointOfInteraction `json:"point_of_interaction"`
 
 	// Status do pagamento (segundo documentação oficial do mercado pago)
@@ -388,9 +389,11 @@ type Barcode struct {
 	Content string `json:"content"` // Código de barras do boleto
 }
 
-// PointOfInteraction é a struct que contém as informações dos dados da transação no caso do pagamento ser em Pix (pelos testes que eu fiz essa struct só é preenchida quando é pix)
+// PointOfInteraction é a struct que contém as informações dos dados da transação no caso do pagamento.
+// No caso de ser PIX possui a chave do PIX no TransactionData.
+// No caso de ser cartão de crédito ou outras formas de pagamento possui algumas outras informações irrelevantes.
 type PointOfInteraction struct {
-	TransactionData TransactionData `json:"transaction_data"` // Informações do QRCode
+	TransactionData *TransactionData `json:"transaction_data"` // Informações do QRCode
 }
 
 // TransactionData é a struct que contém as informações do Base64 do QRCode e a chave Pix Copia-e-Cola
