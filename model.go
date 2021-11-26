@@ -408,5 +408,5 @@ type TransactionData struct {
 type ErrorResponse struct {
 	Error   string `json:"error"`   // Slug do erro que retornou
 	Message string `json:"message"` // Mensagem de erro relacinada ao campo
-	Status  int    `json:"status"`  // Mensagem de erro relacinada ao campo
+	Status  int    `json:"status"`  // Status/Codigo do erro
 }
